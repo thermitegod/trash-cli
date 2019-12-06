@@ -33,7 +33,7 @@ class RestoreCmd(object):
     def run(self, argv):
         if '--version' in argv[1:]:
             command = os.path.basename(argv[0])
-            self.println('%s %s' % (command, self.version))
+            self.println(f'{command} {self.version}')
             return
         if len(argv) == 2:
             specific_path = argv[1]
@@ -57,22 +57,22 @@ class RestoreCmd(object):
             self.report_no_files_found()
         else:
             for i, trashedfile in enumerate(trashed_files):
-                self.println("%4d %s %s" % (i, trashedfile.deletion_date, trashedfile.original_location))
+                self.println(f'{i:4} {trashedfile.deletion_date} {trashedfile.original_location}')
             self.restore_asking_the_user(trashed_files)
 
     def restore_asking_the_user(self, trashed_files):
-        index = self.input("What file to restore [0..%d]: " % (len(trashed_files) - 1))
-        if index == "":
-            self.println("Exiting")
+        index = self.input(f'What file to restore [0..{len(trashed_files) - 1}]: ')
+        if index == '':
+            self.println('Exiting')
         else:
             try:
                 index = int(index)
-                if (index < 0 or index >= len(trashed_files)):
-                    raise IndexError("Out of range")
+                if index < 0 or index >= len(trashed_files):
+                    raise IndexError('Out of range')
                 trashed_file = trashed_files[index]
                 self.restore(trashed_file)
             except (ValueError, IndexError) as e:
-                self.printerr("Invalid entry")
+                self.printerr('Invalid entry')
                 self.exit(1)
             except IOError as e:
                 self.printerr(e)
@@ -103,18 +103,18 @@ class RestoreCmd(object):
                                               backup_file_path)
                     yield trashedfile
                 except ValueError:
-                    trash_dir.logger.warning("Non parsable trashinfo file: %s" % info_file)
+                    trash_dir.logger.warning(f'Non parsable trashinfo file: {info_file}')
                 except IOError as e:
                     trash_dir.logger.warning(str(e))
 
     def report_no_files_found(self):
-        self.println("No files trashed from current dir ('%s')" % self.curdir())
+        self.println(f'No files trashed from current dir (\'{self.curdir()}\')')
 
     def println(self, line):
-        self.out.write(line + '\n')
+        self.out.write(f'{line}\n')
 
     def printerr(self, msg):
-        self.err.write('%s\n' % msg)
+        self.err.write(f'{msg}\n')
 
 
 from .trash import parse_path
@@ -130,8 +130,7 @@ class TrashInfoParser:
         return parse_deletion_date(self.contents)
 
     def original_location(self):
-        path = parse_path(self.contents)
-        return os.path.join(self.volume_path, path)
+        return os.path.join(self.volume_path, parse_path(self.contents))
 
 
 class AllTrashDirectories:
@@ -186,10 +185,9 @@ class TrashedFile:
 
 def restore(trashed_file, path_exists, fs):
     if path_exists(trashed_file.original_location):
-        raise IOError('Refusing to overwrite existing file "%s".' % os.path.basename(trashed_file.original_location))
+        raise IOError(f'Refusing to overwrite existing file \'{os.path.basename(trashed_file.original_location)}\'.')
     else:
-        parent = os.path.dirname(trashed_file.original_location)
-        fs.mkdirs(parent)
+        fs.mkdirs(os.path.dirname(trashed_file.original_location))
 
     fs.move(trashed_file.original_file, trashed_file.original_location)
     fs.remove_file(trashed_file.info_file)

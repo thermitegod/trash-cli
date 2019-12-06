@@ -6,10 +6,7 @@ import sys
 
 def restore():
     from trashcli.restore import RestoreCmd
-    try:  # Python 2
-        input23 = raw_input
-    except:  # Python 3
-        input23 = input
+    input23 = input
     RestoreCmd(
             stdout=sys.stdout,
             stderr=sys.stderr,

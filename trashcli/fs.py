@@ -3,33 +3,39 @@ import shutil
 
 
 class FileSystemListing:
-    def entries_if_dir_exists(self, path):
+    @staticmethod
+    def entries_if_dir_exists(path):
         if os.path.exists(path):
             for entry in os.listdir(path):
                 yield entry
 
-    def exists(self, path):
+    @staticmethod
+    def exists(path):
         return os.path.exists(path)
 
 
 class FileSystemReader(FileSystemListing):
-    def is_sticky_dir(self, path):
-        import os
+    @staticmethod
+    def is_sticky_dir(path):
         return os.path.isdir(path) and has_sticky_bit(path)
 
-    def is_symlink(self, path):
+    @staticmethod
+    def is_symlink(path):
         return os.path.islink(path)
 
-    def contents_of(self, path):
+    @staticmethod
+    def contents_of(path):
         return open(path).read()
 
 
 class FileRemover:
-    def remove_file(self, path):
-        try:
-            return os.remove(path)
-        except OSError:
-            shutil.rmtree(path)
+    @staticmethod
+    def remove_file(path):
+        if os.path.lexists(path):
+            try:
+                os.remove(path)
+            except:
+                shutil.rmtree(path)
 
     def remove_file_if_exists(self, path):
         if os.path.exists(path): self.remove_file(path)
@@ -40,17 +46,16 @@ def contents_of(path):  # TODO remove
 
 
 def has_sticky_bit(path):  # TODO move to FileSystemReader
-    import os
     import stat
     return (os.stat(path).st_mode & stat.S_ISVTX) == stat.S_ISVTX
 
 
 def remove_file(path):
-    if (os.path.lexists(path)):
+    if os.path.lexists(path):
         try:
             os.remove(path)
         except:
-            return shutil.rmtree(path)
+            shutil.rmtree(path)
 
 
 def move(path, dest):
@@ -70,8 +75,7 @@ def mkdirs(path):
 
 
 def atomic_write(filename, content):
-    file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL,
-                          0o600)
+    file_handle = os.open(filename, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
     os.write(file_handle, content)
     os.close(file_handle)
 

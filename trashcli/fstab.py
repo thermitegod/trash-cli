@@ -46,13 +46,14 @@ class OsIsMount:
     def __call__(self, path):
         return os.path.ismount(path)
 
-    def mount_points(self):
+    @staticmethod
+    def mount_points():
         return os_mount_points()
 
 
 class FakeIsMount:
     def __init__(self):
-        self.fakes = set(['/'])
+        self.fakes = {'/'}
 
     def add_mount(self, path):
         self.fakes.add(path)

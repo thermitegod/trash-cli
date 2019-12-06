@@ -49,19 +49,19 @@ class EmptyCmd:
                                             max_age_in_days)
 
     def report_invalid_option_usage(self, program_name, option):
-        self.println_err("{program_name}: invalid option -- '{option}'"
-                         .format(**locals()))
+        self.println_err(f'{program_name}: invalid option -- \'{option}\'')
         self.exit_code |= EX_USAGE
 
     def println_err(self, msg):
-        self.err.write("{}\n".format(msg))
+        self.err.write(f'{msg}\n')
 
-    def description(self, program_name, printer):
-        printer.usage('Usage: %s [days]' % program_name)
+    @staticmethod
+    def description(program_name, printer):
+        printer.usage(f'Usage: {program_name} [days]')
         printer.summary('Purge trashed files.')
         printer.options(
-                "  --version   show program's version number and exit",
-                "  -h, --help  show this help message and exit")
+                '  --version   show program\'s version number and exit',
+                '  -h, --help  show this help message and exit')
         printer.bug_reporting()
 
     def empty_trashdir(self, specific_dir):
@@ -97,13 +97,10 @@ class EmptyCmd:
         return trashcan
 
     def print_cannot_remove_error(self, exc, path):
-        error_message = "cannot remove {path}".format(path=path)
-        self.println_err("{program_name}: {msg}".format(
-                program_name=self.program_name,
-                msg=error_message))
+        self.println_err(f'{self.program_name}: cannot remove {path}')
 
     def println(self, line):
-        self.out.write(line + '\n')
+        self.out.write(f'{line}\n')
 
 
 class FileRemoveWithErrorHandling:
@@ -141,7 +138,8 @@ class DeleteAccordingDate:
 
 
 class DeleteAnything:
-    def delete_if_ok(self, trashinfo_path, trashcan):
+    @staticmethod
+    def delete_if_ok(trashinfo_path, trashcan):
         trashcan.delete_trashinfo_and_backup_copy(trashinfo_path)
 
 

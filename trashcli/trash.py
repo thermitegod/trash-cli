@@ -1,5 +1,4 @@
 # Copyright (C) 2007-2011 Andrea Francia Trivolzio(PV) Italy
-from __future__ import absolute_import
 
 version = '0.17.1.14'
 
@@ -28,12 +27,12 @@ class TrashDirectory:
         self.files_dir = os.path.join(self.path, 'files')
 
         def warn_non_trashinfo():
-            self.logger.warning("Non .trashinfo file in info dir")
+            self.logger.warning('Non .trashinfo file in info dir')
 
         self.on_non_trashinfo_found = warn_non_trashinfo
 
     def all_info_files(self):
-        'Returns a generator of "Path"s'
+        """Returns a generator of Path's"""
         try:
             for info_file in list_files_in_dir(self.info_dir):
                 if not os.path.basename(info_file).endswith('.trashinfo'):
@@ -71,19 +70,16 @@ class TrashDirectories:
         self.getuid = getuid
 
     def home_trash_dir(self, out):
-        self.home_trashcan.path_to(lambda path:
-                                   out(path, self.volume_of(path)))
+        self.home_trashcan.path_to(lambda path: out(path, self.volume_of(path)))
 
     def volume_trash_dir1(self, volume, out):
-        out(
-                path=os.path.join(volume, '.Trash/%s' % self.getuid()),
-                volume=volume)
+        out(path=os.path.join(volume, f'.Trash/{self.getuid()}'), volume=volume)
 
     def volume_trash_dir2(self, volume, out):
-        out(
-                path=os.path.join(volume, ".Trash-%s" % self.getuid()),
-                volume=volume)
+        out(path=os.path.join(volume, f'.Trash-{self.getuid()}'), volume=volume)
 
+
+from .fs import FileSystemReader, contents_of
 
 def do_nothing(*argv, **argvk): pass
 
@@ -134,13 +130,13 @@ class Parser:
         if long_option.endswith('='):
             import re
             long_option = re.sub('=$', '', long_option)
-        self.actions['--' + long_option] = action
+        self.actions[f'--{long_option}'] = action
         for short_alias in short_aliases:
             self.add_short_option(short_alias, action)
 
     def add_short_option(self, short_option, action):
         self.short_options += short_option
-        self.actions['-' + short_option] = action
+        self.actions[f'-{short_option}'] = action
 
     def on_argument(self, argument_action):
         self.argument_action = argument_action
@@ -179,22 +175,25 @@ class TrashDirs:
         self.emit_trashcan_2_for(volume)
 
     def emit_trashcan_1_for(self, volume):
-        top_trashdir_path = os.path.join(volume, '.Trash/%s' % self.getuid())
+        top_trashdir_path = os.path.join(volume, f'.Trash/{self.getuid()}')
 
         class IsValidOutput:
-            def not_valid_parent_should_not_be_a_symlink(_):
+            @staticmethod
+            def not_valid_parent_should_not_be_a_symlink():
                 self.on_trashdir_skipped_because_parent_is_symlink(top_trashdir_path)
 
-            def not_valid_parent_should_be_sticky(_):
+            @staticmethod
+            def not_valid_parent_should_be_sticky():
                 self.on_trashdir_skipped_because_parent_not_sticky(top_trashdir_path)
 
-            def is_valid(_):
+            @staticmethod
+            def is_valid():
                 self.on_trash_dir_found(top_trashdir_path, volume)
 
         self.top_trashdir_rules.valid_to_be_read(top_trashdir_path, IsValidOutput())
 
     def emit_trashcan_2_for(self, volume):
-        alt_top_trashdir = os.path.join(volume, '.Trash-%s' % self.getuid())
+        alt_top_trashdir = os.path.join(volume, f'.Trash-{self.getuid()}')
         self.on_trash_dir_found(alt_top_trashdir, volume)
 
 
@@ -235,7 +234,7 @@ class PrintHelp:
                 self.println('')
 
             def bug_reporting(self):
-                self.println("Report bugs to https://github.com/andreafrancia/trash-cli/issues")
+                self.println('Report bugs to https://github.com/andreafrancia/trash-cli/issues')
 
         self.description = description
         self.printer = Printer(println)
@@ -250,7 +249,7 @@ class PrintVersion:
         self.version = version
 
     def __call__(self, program_name):
-        self.println("%s %s" % (program_name, self.version))
+        self.println(f'{program_name} {self.version}')
 
 
 class TopTrashDirRules:
@@ -310,7 +309,7 @@ class TrashDir:
         return os.path.join(self.trash_dir_path, 'info')
 
     def _trashinfo_path_from_file(self, file_entry):
-        return os.path.join(self._info_dir(), file_entry + '.trashinfo')
+        return os.path.join(self._info_dir(), f'{file_entry}.trashinfo')
 
     def _files_dir(self):
         return os.path.join(self.trash_dir_path, 'files')
@@ -339,10 +338,7 @@ def unknown_date():
     return '????-??-?? ??:??:??'
 
 
-try:
-    from urllib import unquote
-except ImportError:
-    from urllib.parse import unquote
+from urllib.parse import unquote
 
 
 class ParseTrashInfo:
@@ -359,7 +355,7 @@ class ParseTrashInfo:
         for line in contents.split('\n'):
             if line.startswith('DeletionDate='):
                 try:
-                    date = datetime.strptime(line, "DeletionDate=%Y-%m-%dT%H:%M:%S")
+                    date = datetime.strptime(line, 'DeletionDate=%Y-%m-%dT%H:%M:%S')
                 except ValueError:
                     self.found_invalid_date()
                 else:
@@ -403,7 +399,8 @@ class CleanableTrashcan:
         self._file_remover.remove_file_if_exists(backup_copy)
         self._file_remover.remove_file(trashinfo_path)
 
-    def _path_of_backup_copy(self, path_to_trashinfo):
+    @staticmethod
+    def _path_of_backup_copy(path_to_trashinfo):
         from os.path import dirname, join, basename
         trash_dir = dirname(dirname(path_to_trashinfo))
         return join(trash_dir, 'files', basename(path_to_trashinfo)[:-len('.trashinfo')])

@@ -25,8 +25,7 @@ class RmCmd:
 
         if not args:
             self.print_err('Usage:\n'
-                           '    trash-rm PATTERN\n'
-                           '\n'
+                           '    trash-rm PATTERN\n\n'
                            'Please specify PATTERN')
             self.exit_code = 8
             return
@@ -48,22 +47,22 @@ class RmCmd:
         trashdirs.list_trashdirs()
 
     def unable_to_parse_path(self, trashinfo):
-        self.report_error('{}: unable to parse \'Path\''.format(trashinfo))
+        self.report_error(f'{trashinfo}: unable to parse \'Path\'')
 
     def report_error(self, error_msg):
-        self.print_err('trash-rm: {}'.format(error_msg))
+        self.print_err(f'trash-rm: {error_msg}')
 
     def print_err(self, msg):
-        self.stderr.write(msg + '\n')
+        self.stderr.write(f'{msg}\n')
 
 
 def main():
     from trashcli.list_mount_points import mount_points
-    cmd = RmCmd(environ=os.environ
-                , getuid=os.getuid
-                , list_volumes=mount_points
-                , stderr=sys.stderr
-                , file_reader=FileSystemReader())
+    cmd = RmCmd(environ=os.environ,
+                getuid=os.getuid,
+                list_volumes=mount_points,
+                stderr=sys.stderr,
+                file_reader=FileSystemReader())
 
     cmd.run(sys.argv)
 
