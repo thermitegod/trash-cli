@@ -1,15 +1,13 @@
 trash-cli - Command Line Interface to FreeDesktop.org Trash.
 ============================================================
 
-|Donate|_
-
-trash-cli trashes files recording the original path, deletion date, and 
-permissions. It uses the same trashcan used by KDE, GNOME, and XFCE, but you 
+trash-cli trashes files recording the original path, deletion date, and
+permissions. It uses the same trashcan used by KDE, GNOME, and XFCE, but you
 can invoke it from the command line (and scripts).
 
 It provides these commands::
 
-    trash-put           trash files and directories. 
+    trash-put           trash files and directories.
     trash-empty         empty the trashcan(s).
     trash-list          list trashed files.
     trash-restore       restore a trashed file.
@@ -36,7 +34,7 @@ Search for a file in the trashcan::
     2007-08-30 12:39:41 /home/andrea/foo
 
 Restore a trashed file::
-    
+
     $ trash-restore
     0 2007-08-30 12:36:00 /home/andrea/foo
     1 2007-08-30 12:39:41 /home/andrea/bar
@@ -52,7 +50,7 @@ Remove all files from the trashcan::
     $ trash-empty
 
 Remove only the files that have been deleted more than <days> ago::
-    
+
     $ trash-empty <days>
 
 Example::
@@ -93,7 +91,7 @@ Can I alias `rm` to `trash-put`?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can but you shouldn't. In the early days I thought it was a good idea to do
-that but now I changed my mind. 
+that but now I changed my mind.
 
 Although the interface of `trash-put` seems to be compatible with `rm`, it has
 different semantics which will cause you problems. For example, while `rm`
@@ -110,7 +108,7 @@ Then, if you really want to use `rm`, simply prepend a slash to bypass the alias
 
     \rm file-without-hope
 
-Note that Bash aliases are used only in interactive shells, so using 
+Note that Bash aliases are used only in interactive shells, so using
 this alias should not interfere with scripts that expect to use `rm`.
 
 Installation
@@ -125,7 +123,7 @@ Requirements:
  - setuptools (use `apt-get install python-setuptools` on Debian)
 
 Installation command::
- 
+
     easy_install trash-cli
 
 From sources
@@ -178,7 +176,4 @@ Profiling unit tests::
     nosetests --with-profile --profile-stats-file stats.pf --profile-restrict=unit_tests unit_tests
     gprof2dot -w  -f pstats stats.pf | dot -Tsvg >| stats.svg
     open stats.svg
-
-.. |Donate| image:: https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif
-.. _Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=93L6PYT4WBN5A
 
