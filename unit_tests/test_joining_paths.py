@@ -2,6 +2,7 @@
 
 from nose.tools import assert_equals
 
+
 def test_how_path_joining_works():
     from os.path import join
     assert_equals('/another-absolute', join('/absolute', '/another-absolute'))

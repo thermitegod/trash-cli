@@ -1,8 +1,8 @@
-from trashcli.put import TrashDirectoryForPut
-from trashcli.put import TopDirRelativePaths
-from mock import Mock
-from nose.tools import istest, assert_equals
-from mock import ANY
+from unittest.mock import ANY, Mock
+from nose.tools import istest
+
+from trashcli.put import TopDirRelativePaths, TrashDirectoryForPut
+
 
 class TestTrashing:
     def setUp(self):
@@ -17,7 +17,6 @@ class TestTrashing:
 
     @istest
     def the_file_should_be_moved_in_trash_dir(self):
-
         self.trashdir.trash2('foo', self.now, self.logger)
 
         self.fs.move.assert_called_with('foo', '~/.Trash/files/foo')
@@ -25,7 +24,6 @@ class TestTrashing:
 
     @istest
     def test_should_create_a_trashinfo(self):
-
         self.trashdir.trash2('foo', self.now, self.logger)
 
         self.fs.atomic_write.assert_called_with('~/.Trash/info/foo.trashinfo', ANY)
@@ -39,9 +37,9 @@ class TestTrashing:
         self.trashdir.trash2('foo', self.now, self.logger)
 
         self.fs.atomic_write.assert_called_with(ANY,
-                b'[Trash Info]\n'
-                b'Path=foo\n'
-                b'DeletionDate=2012-09-25T21:47:39\n')
+                                                b'[Trash Info]\n'
+                                                b'Path=foo\n'
+                                                b'DeletionDate=2012-09-25T21:47:39\n')
         self.logger.debug.assert_called_with('.trashinfo created as ~/.Trash/info/foo.trashinfo.')
 
     @istest

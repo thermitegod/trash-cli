@@ -1,14 +1,16 @@
-from trashcli.fstab import VolumeOf
-from trashcli.fstab import FakeIsMount
-from nose.tools import assert_equals, istest
 import os
+
+from nose.tools import assert_equals, istest
+
+from trashcli.fstab import FakeIsMount, VolumeOf
+
 
 @istest
 class TestVolumeOf:
 
     def setUp(self):
         self.ismount = FakeIsMount()
-        self.volume_of = VolumeOf(ismount = self.ismount)
+        self.volume_of = VolumeOf(ismount=self.ismount)
         self.volume_of.abspath = os.path.normpath
 
     @istest
@@ -25,4 +27,3 @@ class TestVolumeOf:
     def it_work_also_with_relative_mount_point(self):
         self.ismount.add_mount('relative-fake-vol')
         assert_equals('relative-fake-vol', self.volume_of('relative-fake-vol/foo'))
-

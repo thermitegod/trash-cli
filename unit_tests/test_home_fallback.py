@@ -1,10 +1,12 @@
-from mock import Mock, call, ANY
+import os
+from datetime import datetime
+
+from unittest.mock import ANY, Mock, call
+from nose.tools import assert_equals
 
 from trashcli.fstab import FakeFstab
 from trashcli.put import GlobalTrashCan
-from nose.tools import assert_equals
-from datetime import datetime
-import os
+
 
 class TestHomeFallback:
     def setUp(self):
@@ -12,15 +14,15 @@ class TestHomeFallback:
         mount_points = ['/', 'sandbox/other_partition']
         self.fs = Mock()
         self.trashcan = GlobalTrashCan(
-                reporter = self.reporter,
-                getuid = lambda: 123,
-                volume_of = self.fake_volume_of(mount_points),
-                now = datetime.now,
-                environ = dict(),
-                fs = self.fs,
-                parent_path = os.path.dirname,
-                realpath = lambda x:x,
-                logger = Mock())
+                reporter=self.reporter,
+                getuid=lambda: 123,
+                volume_of=self.fake_volume_of(mount_points),
+                now=datetime.now,
+                environ=dict(),
+                fs=self.fs,
+                parent_path=os.path.dirname,
+                realpath=lambda x: x,
+                logger=Mock())
 
     def test_use_of_top_trash_dir_when_sticky(self):
         self.fs.mock_add_spec(['isdir', 'islink', 'has_sticky_bit',
@@ -68,22 +70,23 @@ class TestHomeFallback:
             fstab.add_mount(vol)
         return fstab.volume_of
 
-from trashcli.trash import TrashDirectories
+
 from trashcli.restore import AllTrashDirectories
+
+
 class TestTrashDirectories:
     def test_list_all_directories(self):
         all_trash_directories = AllTrashDirectories(
-                volume_of    = Mock(),
-                getuid       = lambda:123,
-                environ      = {'HOME': '~'},
-                mount_points = ['/', '/mnt'])
+                volume_of=Mock(),
+                getuid=lambda: 123,
+                environ={'HOME': '~'},
+                mount_points=['/', '/mnt'])
 
         result = all_trash_directories.all_trash_directories()
         paths = list(map(lambda td: td.path, result))
 
-        assert_equals( ['~/.local/share/Trash',
-                        '/.Trash/123',
-                        '/.Trash-123',
-                        '/mnt/.Trash/123',
-                        '/mnt/.Trash-123'] , paths)
-
+        assert_equals(['~/.local/share/Trash',
+                       '/.Trash/123',
+                       '/.Trash-123',
+                       '/mnt/.Trash/123',
+                       '/mnt/.Trash-123'], paths)

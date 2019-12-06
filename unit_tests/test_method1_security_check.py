@@ -1,7 +1,8 @@
-from mock import Mock
+from unittest.mock import Mock
 
 from integration_tests.files import require_empty_dir
 from trashcli.put import TopTrashDirWriteRules
+
 
 class TestMethod1VolumeTrashDirectory:
     def setUp(self):
@@ -35,7 +36,6 @@ class TestMethod1VolumeTrashDirectory:
         self.out.not_valid_parent_should_not_be_a_symlink.assert_called_with()
 
     def test_check_pass(self):
-
         self.valid_to_be_written()
 
         self.out.is_valid()

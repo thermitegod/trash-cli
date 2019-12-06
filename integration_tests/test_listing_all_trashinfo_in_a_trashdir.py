@@ -1,10 +1,10 @@
-from trashcli.trash import TrashDirectory
-
-from .files import require_empty_dir
-from .files import write_file
-from unit_tests.tools import assert_items_equal
+from unittest.mock import Mock
 from nose.tools import assert_equals
-from mock import Mock
+
+from trashcli.trash import TrashDirectory
+from nose.tools import assert_count_equal as assert_items_equal
+from .files import require_empty_dir, write_file
+
 
 class TestWhenListingTrashinfo:
     def setUp(self):
@@ -12,7 +12,6 @@ class TestWhenListingTrashinfo:
         self.trash_dir = TrashDirectory('sandbox', '/')
         self.logger = Mock()
         self.trash_dir.logger = self.logger
-
 
     def test_should_list_a_trashinfo(self):
         write_file('sandbox/info/foo.trashinfo')
@@ -48,5 +47,3 @@ class TestWhenListingTrashinfo:
 
     def list_trashinfos(self):
         return list(self.trash_dir.all_info_files())
-
-

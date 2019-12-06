@@ -1,6 +1,8 @@
-from trashcli.empty import EmptyCmd
-from mock import Mock, call
+from unittest.mock import Mock, call
 from nose.tools import assert_equals
+
+from trashcli.empty import EmptyCmd
+
 
 class TestTrashEmptyCmd:
     def setUp(self):
@@ -22,4 +24,3 @@ class TestTrashEmptyCmd:
 
         assert_equals([], self.empty_all_trashdirs.mock_calls)
         assert_equals([call('specific')], self.empty_trashdir.mock_calls)
-

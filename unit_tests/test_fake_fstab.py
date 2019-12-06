@@ -1,8 +1,8 @@
-from trashcli.fstab import FakeFstab
+from nose.tools import assert_equals, istest
 
-from nose.tools import assert_equals
-from nose.tools import istest
-from unit_tests.tools import assert_items_equal
+from trashcli.fstab import FakeFstab
+from nose.tools import assert_count_equal as assert_items_equal
+
 
 class TestFakeFstab:
     def setUp(self):
@@ -34,6 +34,5 @@ class TestFakeFstab:
         expected_mounts = list(expected_mounts)
         actual_mounts = list(self.fstab.mount_points())
         assert_items_equal(expected_mounts, list(self.fstab.mount_points()),
-                'Expected: %s\n'
-                'Found: %s\n' % (expected_mounts, actual_mounts))
-
+                           f'Expected: {expected_mounts}\n'
+                           f'Found: {actual_mounts}\n')

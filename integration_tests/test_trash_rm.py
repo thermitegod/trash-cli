@@ -1,11 +1,12 @@
-from unit_tests.myStringIO import StringIO
-from mock import Mock, ANY
-from nose.tools import assert_false, assert_raises, assert_equals
+from io import StringIO
 
+from unittest.mock import ANY, Mock
+from nose.tools import assert_equals, assert_false
+
+from trashcli.rm import ListTrashinfos, RmCmd
 from .files import require_empty_dir, write_file
-from trashcli.rm import RmCmd, ListTrashinfos
 from .trashinfo import a_trashinfo_with_path, a_trashinfo_without_path
-from trashcli.trash import ParseError
+
 
 class TestTrashRm:
     def test_issue69(self):
@@ -19,7 +20,6 @@ class TestTrashRm:
                       '\n'
                       , self.stderr.getvalue())
 
-
     def test_integration(self):
         self.add_trashinfo_for(1, 'to/be/deleted')
         self.add_trashinfo_for(2, 'to/be/kept')
@@ -27,31 +27,36 @@ class TestTrashRm:
         self.trash_rm.run(['trash-rm', 'delete*'])
 
         self.assert_trashinfo_has_been_deleted(1)
+
     def setUp(self):
         require_empty_dir('sandbox/xdh')
         self.stderr = StringIO()
-        self.trash_rm = RmCmd(environ = {'XDG_DATA_HOME':'sandbox/xdh'}
-                         , getuid = 123
-                         , list_volumes = lambda:[]
-                         , stderr = self.stderr
-                         , file_reader = FileSystemReader())
+        self.trash_rm = RmCmd(environ={'XDG_DATA_HOME': 'sandbox/xdh'}
+                              , getuid=123
+                              , list_volumes=lambda: []
+                              , stderr=self.stderr
+                              , file_reader=FileSystemReader())
 
     def add_trashinfo_for(self, index, path):
         write_file(self.trashinfo_from_index(index),
                    a_trashinfo_with_path(path))
+
     def add_invalid_trashinfo_without_path(self, index):
         write_file(self.trashinfo_from_index(index),
                    a_trashinfo_without_path())
+
     def trashinfo_from_index(self, index):
         return 'sandbox/xdh/Trash/info/%s.trashinfo' % index
 
     def assert_trashinfo_has_been_deleted(self, index):
         import os
         filename = self.trashinfo_from_index(index)
-        assert_false(os.path.exists(filename),
-                'File "%s" still exists' % filename)
+        assert_false(os.path.exists(filename), f'File "{filename}" still exists')
+
 
 from trashcli.fs import FileSystemReader
+
+
 class TestListing:
     def setUp(self):
         require_empty_dir('sandbox')
@@ -78,28 +83,24 @@ class TestListing:
     def test_should_handle_volume_trashdir(self):
         self.add_trashinfo(trashinfo_path='sandbox/.Trash/123/info/a.trashinfo')
 
-        self.listing.list_from_volume_trashdir('sandbox/.Trash/123',
-                                               '/fake/vol')
+        self.listing.list_from_volume_trashdir('sandbox/.Trash/123', '/fake/vol')
 
         self.out.assert_called_with(ANY, 'sandbox/.Trash/123/info/a.trashinfo')
 
     def test_should_absolutize_relative_path_for_volume_trashdir(self):
         self.add_trashinfo(path='foo/bar', trashdir='sandbox/.Trash/501')
 
-        self.listing.list_from_volume_trashdir('sandbox/.Trash/501',
-                                               '/fake/vol')
+        self.listing.list_from_volume_trashdir('sandbox/.Trash/501', '/fake/vol')
 
         self.out.assert_called_with('/fake/vol/foo/bar', ANY)
 
     def add_trashinfo(self, path='unspecified/original/location',
-                            trashinfo_path=None,
-                            trashdir='sandbox/Trash'):
+                      trashinfo_path=None,
+                      trashdir='sandbox/Trash'):
         trashinfo_path = trashinfo_path or self._trashinfo_path(trashdir)
         write_file(trashinfo_path, a_trashinfo_with_path(path))
+
     def _trashinfo_path(self, trashdir):
-        path = '%s/info/%s.trashinfo' % (trashdir, self.index)
-        self.index +=1
+        path = f'{trashdir}/info/{self.index}.trashinfo'
+        self.index += 1
         return path
-
-
-
