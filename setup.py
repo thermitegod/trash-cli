@@ -14,8 +14,11 @@ def main():
     scripts.add_script('trash-empty', 'trashcli.cmds', 'empty')
     scripts.add_script('trash-rm', 'trashcli.rm', 'main')
     setup(
-            name='trash-cli', version=trash.version,
-            author='Andrea Francia', author_email='andrea@andreafrancia.it',
+            name='trash-cli',
+            version=trash.version,
+            python_requires=['>=3.8'],
+            author='Andrea Francia',
+            author_email='andrea@andreafrancia.it',
             url='https://github.com/andreafrancia/trash-cli',
             description='Command line interface to FreeDesktop.org Trash.',
             long_description=read_file("README.rst"),
@@ -40,12 +43,12 @@ class Scripts:
         self.created_scripts = []
 
     def add_script(self, name, module, main_function):
-        script_contents = dedent("""\
+        script_contents = dedent(f"""\
             #!/usr/bin/env python
             import sys
-            from %(module)s import %(main_function)s as main
+            from {module} import {main_function} as main
             sys.exit(main())
-            """) % locals()
+            """)
         self.write_file(name, script_contents)
         self.make_file_executable(name)
         self.created_scripts.append(name)
