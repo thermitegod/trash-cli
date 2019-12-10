@@ -32,8 +32,7 @@ class RestoreCmd(object):
 
     def run(self, argv):
         if '--version' in argv[1:]:
-            command = os.path.basename(argv[0])
-            self.println(f'{command} {self.version}')
+            self.println(f'{os.path.basename(argv[0])} {self.version}')
             return
         if len(argv) == 2:
             specific_path = argv[1]
@@ -61,8 +60,7 @@ class RestoreCmd(object):
             self.restore_asking_the_user(trashed_files)
 
     def restore_asking_the_user(self, trashed_files):
-        index = self.input(f'What file to restore [0..{len(trashed_files) - 1}]: ')
-        if index == '':
+        if (index := self.input(f'What file to restore [0..{len(trashed_files) - 1}]: ')) == '':
             self.println('Exiting')
         else:
             try:

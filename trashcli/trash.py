@@ -81,6 +81,7 @@ class TrashDirectories:
 
 from .fs import FileSystemReader, contents_of
 
+
 def do_nothing(*argv, **argvk): pass
 
 
@@ -257,10 +258,9 @@ class TopTrashDirRules:
         self.fs = fs
 
     def valid_to_be_read(self, path, output):
-        parent_trashdir = os.path.dirname(path)
         if not self.fs.exists(path):
             return
-        if not self.fs.is_sticky_dir(parent_trashdir):
+        if not self.fs.is_sticky_dir(parent_trashdir := os.path.dirname(path)):
             output.not_valid_parent_should_be_sticky()
             return
         if self.fs.is_symlink(parent_trashdir):

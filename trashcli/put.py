@@ -486,8 +486,7 @@ def shrinkuser(path, environ=os.environ):
     import posixpath
     import re
     try:
-        home_dir = posixpath.normpath(environ['HOME'])
-        if home_dir != '':
+        if (home_dir := posixpath.normpath(environ['HOME'])) != '':
             path = re.sub(f'^{re.escape(home_dir + os.path.sep)}', f'~{os.path.sep}', path)
     except KeyError:
         pass
@@ -499,8 +498,7 @@ def all_is_ok_checker(trash_dir_path, output, fs):
 
 
 def TopTrashDirWriteRules(trash_dir_path, output, fs):
-    parent = os.path.dirname(trash_dir_path)
-    if not fs.isdir(parent):
+    if not fs.isdir(parent := os.path.dirname(trash_dir_path)):
         output.not_valid_should_be_a_dir()
         return
     if fs.islink(parent):
