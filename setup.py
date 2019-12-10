@@ -42,7 +42,6 @@ class Scripts:
     def add_script(self, name, module, main_function):
         script_contents = dedent("""\
             #!/usr/bin/env python
-            from __future__ import absolute_import
             import sys
             from %(module)s import %(main_function)s as main
             sys.exit(main())

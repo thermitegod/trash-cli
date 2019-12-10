@@ -1,4 +1,3 @@
-from __future__ import print_function
 TARGET_HOST = 'default'
 
 import nose
